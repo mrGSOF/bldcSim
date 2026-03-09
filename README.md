@@ -1,5 +1,6 @@
 # BLDC Motor Simulation
 Simple physics simulation of Brush-Less Direct Current (BLDC) motor. Demostrating movement of rotor.
+Sit back and enjoy developing your BLDC controller in a fully software simulated enviorement.
 
 ## Theory of operation
 Excellent tutorial by **Jentzen Lee** is below. It inspired me to write this simulation:\
@@ -25,9 +26,12 @@ The demo application demonstrate smooth and step movement of the rotor by using 
 ![alt text](./figures/BLDCopenloopsmooth.gif "Sceenshot")
 ![alt text](./figures/BLDCopenloopstepper.gif "Sceenshot")
 
-Other closed loop controllers will be icluded in the future:
-- 6 step commutation
-- Field Oriented Control (FOC) with Space Vector Modulation (SVM)
+## Future plans
+- Add Hall sensor and encoder outputs to API.
+- Add more examples of controllers such as:
+  - Open loop Space Vector Modulation (SVM).
+  - Closed-loop 6 step commutation.
+  - Closed-loop Field Oriented Control (FOC) with SVM.
 
 Requires Python to run the EM_model (inclues dedicated unit-test). For visual support install pyGame and GSOF_Cockpit as well.
 
