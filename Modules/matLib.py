@@ -15,6 +15,7 @@ I wrote the code as procedures to simplify migration to C.
 """
 
 from math import cos, sin
+import copy
 
 def matrix(rows, cols, val=0) -> list:
     """ Returns the rows by cols matrix M filled with value val """
@@ -69,3 +70,30 @@ def MxV(M,V) -> list:
         for m,v in zip(row,V):
             O[r] += m*v
     return O
+
+def getM(M) -> list:
+    """Return a copy of matrix M"""
+    return copy.deepcopy(M)
+
+def putCol(M, col, vCol) -> None:
+    """ Write column 'col' of the matrix 'M' with vCol"""
+    rows = len(M)
+    for i in range(0, rows):
+        M[i][col] = vCol[i]
+
+def putRow(M, row, vRow) -> None:
+    """ Write row 'row' of the matrix 'M' with vRow"""
+    cols = len(M[row])
+    for i in range(0, cols):
+        M[row][i] = vRow[i]
+
+def rowColRemove(A, row=-1, col=-1) -> list:
+    """Return the matrix A after removing col and row"""
+    B = copy.deepcopy(A)
+    if row >= 0:
+        del B[row]
+
+    if col >= 0:
+        for row in B:
+            del row[col]
+    return B 

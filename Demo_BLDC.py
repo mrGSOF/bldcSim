@@ -35,7 +35,8 @@ background = Text(  screen=screen, pos=pos, size=screen_size, color=BG_color, na
 
 dt = 0.001
 #ctrl = Controller_openloop(Type="ideal", dt=dt) #< "step" or "ideal"
-ctrl = Controller_openloop(Type="step", dt=dt) #< "step" or "ideal"
+#ctrl = Controller_openloop(Type="step_svm", dt=dt) #< "step" or "ideal"
+ctrl = Controller_openloop(Type="step_com", dt=dt) #< "step" or "ideal"
 
 bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0003, viscosity_Nm_rps=0.00002,
                coilImpedance_Ohm=1.67, Kv_rpm_v=258)

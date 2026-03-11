@@ -1,6 +1,6 @@
 from math import pi
 from vecLib import subV, scaleV, crossV3, polarV2
-from matLib import MxV, rotateV2
+from matLib import MxV, rotateV2, getM, putCol, putRow
 from ClarkeTransform import clarke, clarkeInv
 
 def crossV2(V2a, V2b) -> float:
@@ -52,16 +52,31 @@ class Stator():
         Z = self.Z
 
         ### Iabc = A x Vabc
-        self.VtoI = [[ 1/1.5*Z, -1/3*Z,   -1/3*Z  ],
-                     [-1/3*Z,    1/1.5*Z, -1/3*Z  ],
-                     [-1/3*Z,   -1/3*Z,    1/1.5*Z]]
+        self.VtoI_com = [[ 1/2*Z, -1/2*Z, -1/2*Z],
+                         [-1/2*Z,  1/2*Z, -1/2*Z],
+                         [-1/2*Z, -1/2*Z,  1/2*Z]]
+
+        self.VtoI_svm = [[ 1/1.5*Z, -1/3*Z,   -1/3*Z  ],
+                         [-1/3*Z,    1/1.5*Z, -1/3*Z  ],
+                         [-1/3*Z,   -1/3*Z,    1/1.5*Z]]
+
         self.phaseV    = [0,0,0]
         self.calcMagField(*self.phaseV)
         self.phaseBemf = [0,0,0]
 
     def _calcCurrent(self, va, vb, vc) -> list:
         self.phaseV = [va, vb, vc]
-        self.phaseA = MxV(self.VtoI, self.phaseV)
+        if None in self.phaseV:
+            phaseV = [va, vb, vc]
+            offV = [0,0,0]
+            offIdx = phaseV.index(None)
+            phaseV[offIdx] = 0
+            VtoI_com = getM(self.VtoI_com)
+            putRow(VtoI_com, offIdx, offV)
+            putCol(VtoI_com, offIdx, offV)
+            self.phaseA = MxV(VtoI_com, phaseV)
+        else:
+            self.phaseA = MxV(self.VtoI_svm, self.phaseV)
         return self.phaseA
 
     def calcMagField(self, va, vb, vc) -> list:
@@ -100,7 +115,10 @@ class BLDC():
 
     def step(self, va, vb, vc, dt) -> None:
         phaseV = [va, vb, vc]
-        phaseV = subV(phaseV, self.stator.calcBemf(self.rotor, self.Kv))
+        bemf = self.stator.calcBemf(self.rotor, self.Kv)
+        for i,(pv,bv) in enumerate(zip(phaseV,bemf)):
+            if pv != None:
+                phaseV[i] = pv -bv
         torque = self.Kt * crossV2(self.stator.calcMagField(va, vb, vc), self.rotor.getMagField())
         self._stepRotor(torque, dt)
 
@@ -108,10 +126,9 @@ class BLDC():
         rotor = self.rotor
         ### Calculate next state values
         torque -= rotor.omega_rps*self.viscosity
-        if (abs(rotor.omega_rps) < 0.1):
-            if (torque < self.friction):
-                torque = 0.0
-                rotor.omega_rps = 0.0
+        if (abs(rotor.omega_rps) < 0.01) and (abs(torque) < self.friction):
+            torque = 0.0
+            rotor.omega_rps = 0.0
         else:
             torque -= sign(rotor.omega_rps)*self.friction
 
@@ -133,10 +150,11 @@ if __name__ == "__main__":
     bldc.print()
 
     dt = 0.001
-    Type = "step" #< "step", "ideal"
+    Type = "step_com" #< "step_svm", "step_com", "ideal"
     ctrl = Controller_openloop(Type, dt)
     ctrl.print()
     STEPS  = int(12*ctrl.dwell/dt +0.5)
+    stator = [0]*STEPS
     theta  = [0]*STEPS
     omega  = [0]*STEPS
     bemf   = zeros(rows=STEPS, cols=3)
@@ -151,11 +169,13 @@ if __name__ == "__main__":
         time[frame]  = ctrl.time
         theta[frame] = bldc.rotor.theta_rad
         omega[frame] = bldc.rotor.omega_rps
+        stator[frame] = bldc.stator.magField_rad
         bemf[frame]  = bldc.stator.phaseBemf
 
 
     plt.plot(time, theta)
-    if Type != "step":
+    plt.plot(time, stator)
+    if (Type != "step_com") and (Type != "step_svm"):
         plt.plot(time, bemf)  #< Comment out when in "step" mode
         plt.plot(time, omega) #< Comment out when in "step" mode
     plt.show()
