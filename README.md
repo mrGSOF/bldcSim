@@ -20,11 +20,19 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Clarke and inverse Clarke transformations.
 - Kv, Kt, resistance, phase-voltage, rotor-inertia, viscosity and friction coeficiants.
 - Simplified electrical solver for currents in 3-phase half H-bridge acounting for back-emf in the DC domain.
+- Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6 and 12 step commutation methods.
 
-The demo application demonstrate smooth and step movement of the rotor by using an open-loop controller with 6 step commutation.
+### Open loop with smooth motion (3 active phase)
+![alt text](./figures/BLDCopenloopsmooth_6step.gif "Open loop with smooth motion (3 active phase)")
 
-![alt text](./figures/BLDCopenloopsmooth.gif "Sceenshot")
-![alt text](./figures/BLDCopenloopstepper.gif "Sceenshot")
+### Open loop with 12 step commutation (combined 2 and 3 active phase)
+![alt text](./figures/BLDCopenloop_12step.gif "Open loop with 12 step commutation (3 active phase)")
+
+### Open loop with 6 step commutation (3 active phase)
+![alt text](./figures/BLDCopenloop_6step_3phase.gif "Open loop with 6 step commutation (3 active phase)")
+
+### Open loop with 6 step commutation (2 active phase)
+![alt text](./figures/BLDCopenloop_6step_2phase.gif "Open loop with 6 step commutation (2 active phase)")
 
 ## Future plans
 - Add Hall sensor and encoder outputs to API.

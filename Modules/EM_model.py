@@ -150,7 +150,7 @@ if __name__ == "__main__":
     bldc.print()
 
     dt = 0.001
-    Type = "step_com" #< "step_svm", "step_com", "ideal"
+    Type = "step_12com" #< "step_svm", "step_6com", "step_12com", "ideal"
     ctrl = Controller_openloop(Type, dt)
     ctrl.print()
     STEPS  = int(12*ctrl.dwell/dt +0.5)
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     plt.plot(time, theta)
     plt.plot(time, stator)
-    if (Type != "step_com") and (Type != "step_svm"):
+    if (Type != "step_6com") and (Type != "step_12com") and (Type != "step_svm"):
         plt.plot(time, bemf)  #< Comment out when in "step" mode
         plt.plot(time, omega) #< Comment out when in "step" mode
     plt.show()
