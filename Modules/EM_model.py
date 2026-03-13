@@ -2,6 +2,7 @@ from math import pi
 from vecLib import subV, scaleV, crossV3, polarV2
 from matLib import MxV, rotateV2, getM, putCol, putRow
 from ClarkeTransform import clarke, clarkeInv
+from Load_base import Load_base
 
 _2pi = 2*pi
 def crossV2(V2a, V2b) -> float:
@@ -34,7 +35,7 @@ class Hall():
         self.min = Min + self.offset
         self.northHigh = northHigh
         self.state = False
-        print(self.offset*180/pi, self.min*180/pi, self.max*180/pi)
+        #print(self.offset*180/pi, self.min*180/pi, self.max*180/pi)
 
     def _isInRange(self, northAngle) -> bool:
         northAngle = (_2pi +northAngle%(_2pi) +self.offset)%(_2pi)
@@ -64,9 +65,9 @@ class Rotor():
                 self.omega_rps,
                 self.theta_rad]
 
-    def step(self, torque, dt) -> list:
+    def step(self, torque, loadInertia=0.0, dt=1.0) -> list:
         """Update next state values"""
-        self.omega_rps_dot = torque / self.inertia
+        self.omega_rps_dot = torque / (self.inertia +loadInertia)
         self.theta_rad    += self.omega_rps*dt +0.5*self.omega_rps_dot*dt*dt
         self.omega_rps    += self.omega_rps_dot*dt
 
@@ -135,13 +136,15 @@ class Stator():
 class BLDC():
     def __init__(self, inertia_kgm2=0.000005, omega_rps=0.0, theta_rad=0.0,
                  friction_Nm=0.1, viscosity_Nm_rps=0.2,
-                 coilImpedance_Ohm=1.67, Kv_rpm_v=258):
+                 coilImpedance_Ohm=1.67, Kv_rpm_v=258,
+                 load=Load_base()):
         self.Kv        = Kv_rpm_v*2*pi/60 #< Might belong to the Rotor class
         self.Kt        = 1/Kv_rpm_v
         self.friction  = friction_Nm
         self.viscosity = viscosity_Nm_rps
         self.rotor     = Rotor(inertia_kgm2, omega_rps, theta_rad)
         self.stator    = Stator(coilImpedance_Ohm)
+        self.load      = load
         hallSector_rad = 90*pi/180 #< +/-50 deg
         self.hallA     = Hall(180*pi/180, hallSector_rad)
         self.hallB     = Hall(300*pi/180, hallSector_rad)
@@ -151,6 +154,7 @@ class BLDC():
         self.encoder   = Encoder(counts=4096)
         
     def step(self, va, vb, vc, dt) -> None:
+        """"""
         self._sampleHallState()
         phaseV = [va, vb, vc]
         bemf = self.stator.calcBemf(self.rotor, self.Kv)
@@ -167,16 +171,22 @@ class BLDC():
 
     def _stepRotor(self, torque, dt) -> None:
         rotor = self.rotor
-        ### Calculate next state values
-        torque -= rotor.omega_rps*self.viscosity
-        if (abs(rotor.omega_rps) < 0.01) and (abs(torque) < self.friction):
+        ### Combile motor and load parameters
+        load = self.load.step(dt)
+        viscosity = self.viscosity +load.viscosity
+        friction  = self.friction +load.friction
+        torque   += load.torque
+        
+        ### Acount for friction
+        torque -= rotor.omega_rps*viscosity
+        if (abs(rotor.omega_rps) < 0.01) and (abs(torque) < friction):
             torque = 0.0
             rotor.omega_rps = 0.05
         else:
-            torque -= sign(rotor.omega_rps)*self.friction
+            torque -= sign(rotor.omega_rps)*friction
 
         ### Update Rotors next state values
-        rotor.step(torque, dt)
+        rotor.step(torque, load.inertia, dt)
 
     def getBemf(self) -> list:
         return self.stator.phaseBemf()
