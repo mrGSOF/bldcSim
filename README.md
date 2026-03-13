@@ -20,6 +20,8 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Clarke and inverse Clarke transformations.
 - Kv, Kt, resistance, phase-voltage, rotor-inertia, viscosity and friction coeficiants.
 - Simplified electrical solver for currents in 3-phase half H-bridge acounting for back-emf in the DC domain.
+- Hall sensors output.
+- Encoder output.
 - Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6 and 12 step commutation methods.
 
 ### Open loop with smooth motion (3 active phase)
@@ -35,11 +37,14 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 ![alt text](./figures/BLDCopenloop_6step_2phase.gif "Open loop with 6 step commutation (2 active phase)")
 
 ## Future plans
-- Add Hall sensor and encoder outputs to API.
+- Add configured pole to motor.
+- Add option for dynamic load generation.
+- Load motor parameters from json file.
 - Add more examples of controllers such as:
   - Open loop Space Vector Modulation (SVM).
   - Closed-loop 6 step commutation.
   - Closed-loop Field Oriented Control (FOC) with SVM.
+  - Sensorless  6 step commutation.
 
 Requires Python to run the EM_model (inclues dedicated unit-test). For visual support install pyGame and GSOF_Cockpit as well.
 
