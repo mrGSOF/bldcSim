@@ -206,16 +206,19 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matLib import zeros
     from Controller_openloop import Controller_openloop
+    from Load_constant import Load_const as Load
     
     bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0005, viscosity_Nm_rps=0.00002,
-                coilImpedance_Ohm=1.67, Kv_rpm_v=258)
+                coilImpedance_Ohm=1.67, Kv_rpm_v=258,
+                load=Load(inertia=0.0, viscosity=0.0, friction=0.0, torque=0.000)
+               )
     bldc.print()
 
     dt = 0.001
-    Type = "ideal" #< "step_svm", "step_6com", "step_12com", "ideal"
+    Type = "smooth_6com" #< "smooth_svm", "smooth_6com", "step_12com", "step_6svm", "step_6com"
     ctrl = Controller_openloop(Type, dt)
     ctrl.print()
-    STEPS  = int(12*ctrl.dwell/dt +0.5)
+    STEPS  = int(2*len(ctrl.COMMUTATION)*ctrl.dwell/dt +0.5)
     stator = [0]*STEPS
     theta  = [0]*STEPS
     omega  = [0]*STEPS
@@ -242,7 +245,7 @@ if __name__ == "__main__":
     plt.plot(time, stator)
     plt.plot(time, halls)
     plt.plot(time, count)
-    if (Type != "step_6com") and (Type != "step_12com") and (Type != "step_svm"):
+    if (Type != "step_6com") and (Type != "step_12com") and (Type != "step_6svm"):
         plt.plot(time, bemf)
         plt.plot(time, omega)
     plt.show()

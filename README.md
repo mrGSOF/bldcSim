@@ -22,7 +22,8 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Simplified electrical solver for currents in 3-phase half H-bridge acounting for back-emf in the DC domain.
 - Hall sensors output.
 - Encoder output.
-- Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6 and 12 step commutation methods.
+- Support exteranl load and disturbance (currently constant).
+- Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6, 12 and 72 (SVM) step commutation methods.
 
 ### Open loop with smooth motion (3 active phase)
 ![alt text](./figures/BLDCopenloopsmooth_6step.gif "Open loop with smooth motion (3 active phase)")
@@ -37,14 +38,14 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 ![alt text](./figures/BLDCopenloop_6step_2phase.gif "Open loop with 6 step commutation (2 active phase)")
 
 ## Future plans
-- Add configured pole to motor.
-- Add option for dynamic load generation.
+- Configurable number of poles to motor.
+- Option for dynamic-load changes.
 - Load motor parameters from json file.
-- Add more examples of controllers such as:
-  - Open loop Space Vector Modulation (SVM).
+- More examples of controllers such as:
+  - Demonstration of automatic commutation technique.
   - Closed-loop 6 step commutation.
   - Closed-loop Field Oriented Control (FOC) with SVM.
-  - Sensorless  6 step commutation.
+  - Closed-loop sensorless 6 step commutation.
 
 Requires Python to run the EM_model (inclues dedicated unit-test). For visual support install pyGame and GSOF_Cockpit as well.
 
@@ -58,6 +59,6 @@ https://github.com/mrGSOF/GSOF_Cockpit
 - Install requirements `pip install -r requirements.txt`
 - Clone and install GSOF_Cockpit (`pip setup.py`)
 - Clone bldcSim
-- run `Demo_BLDC.py`
+- run `python Demo_BLDC_openloop.py`
 
 Interactive operation isn't supported yet.

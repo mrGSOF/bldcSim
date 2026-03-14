@@ -1,4 +1,5 @@
 from vecLib import scaleV
+from math import pi, sin, cos
 
 class Controller_openloop():
     def __init__(self, Type="none", dwell=None, V=None, dt=0.001):    
@@ -45,7 +46,8 @@ class Controller_openloop():
 ##                                ]
 
 ## CW with three phase activation on each step
-        self.COMMUTATION_SVM = [[0,0,1], #0
+        self.COMMUTATION_6SVM = [
+                                [0,0,1], #0
                                 [1,0,1], #1
                                 [1,0,0], #2
                                 [1,1,0], #3
@@ -53,26 +55,37 @@ class Controller_openloop():
                                 [0,1,1], #5
                                 ]
 
-        if Type == "ideal":
+        if Type == "smooth_6com":
             self.dwell  = 0.08 #< Almost ideal dwell time at each comutation state
             self.V      = 0.2
-            self.COMMUTATION = self.COMMUTATION_SVM
+            self.COMMUTATION = self.COMMUTATION_6SVM
         elif Type == "step_6com":
-            self.dwell  = 0.5 #< Almost ideal dwell time at each comutation state
+            self.dwell  = 0.5
             self.V      = 2.0
             self.COMMUTATION = self.COMMUTATION_6COM
         elif Type == "step_12com":
-            self.dwell  = 0.3 #< Almost ideal dwell time at each comutation state
+            self.dwell  = 0.3
             self.V      = 2.0
             self.COMMUTATION = self.COMMUTATION_12COM
-        elif Type == "step_svm":
-            self.dwell  = 0.5 #< Almost ideal dwell time at each comutation state
+        elif Type == "step_6svm":
+            self.dwell  = 0.5
             self.V      = 2.0
-            self.COMMUTATION = self.COMMUTATION_SVM
+            self.COMMUTATION = self.COMMUTATION_6SVM
+        elif Type == "smooth_svm":
+            self.dwell  = 0.01
+            self.V      = 0.1
+            DELTA_DEG   = 5        #< Five degree step resolution
+            self.COMMUTATION = [0]*int(360/DELTA_DEG)
+            PHASE_RAD = 120*pi/180 #< 120 degrees
+            for i, deg in enumerate(range(0,360,DELTA_DEG)):
+                phase_r = deg*pi/180
+                self.COMMUTATION[i] = [cos(phase_r +2*PHASE_RAD),
+                                       cos(phase_r +1*PHASE_RAD),
+                                       cos(phase_r +0*PHASE_RAD)]
         else:
             self.dwell  = dwell
             self.V      = V
-            self.COMMUTATION = self.COMMUTATION_SVM
+            self.COMMUTATION = self.COMMUTATION_6SVM
 
         self.time = 0
         self.camIdx = 0
@@ -103,9 +116,9 @@ if __name__ == "__main__":
     from matLib import matrix
 
     dt = 0.001
-    ctrl = Controller_openloop(Type="step_12com", dt=dt)
+    ctrl = Controller_openloop(Type="smooth_svm", dt=dt)
     ctrl.print()
-    STEPS  = int(6*ctrl.dwell/dt +0.5)
+    STEPS  = int(len(ctrl.COMMUTATION)*ctrl.dwell/dt +0.5)
     phaseV = matrix(rows=STEPS, cols=3, val=0)
     time   = [0]*STEPS
 
