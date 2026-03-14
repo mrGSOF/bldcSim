@@ -25,6 +25,9 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Support exteranl load and disturbance (currently constant).
 - Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6, 12 and 72 (SVM) step commutation methods.
 
+### Open loop with smooth SVM motion (72 steps, 5 deg each)
+![alt text](./figures/BLDCopenloopsmooth_SVM.gif "Open loop with smooth SVM motion (72 steps, 5 deg each)")
+
 ### Open loop with smooth motion (3 active phase)
 ![alt text](./figures/BLDCopenloopsmooth_6step.gif "Open loop with smooth motion (3 active phase)")
 
