@@ -87,7 +87,7 @@ class Stator():
                          [-1/2*Z,  1/2*Z, -1/2*Z],
                          [-1/2*Z, -1/2*Z,  1/2*Z]]
 
-        self.VtoI_svm = [[ 1/1.5*Z, -1/3*Z,   -1/3*Z  ],
+        self.VtoI_sin = [[ 1/1.5*Z, -1/3*Z,   -1/3*Z  ],
                          [-1/3*Z,    1/1.5*Z, -1/3*Z  ],
                          [-1/3*Z,   -1/3*Z,    1/1.5*Z]]
 
@@ -107,7 +107,7 @@ class Stator():
             putCol(VtoI_com, offIdx, offV)
             self.phaseA = MxV(VtoI_com, phaseV)
         else:
-            self.phaseA = MxV(self.VtoI_svm, self.phaseV)
+            self.phaseA = MxV(self.VtoI_sin, self.phaseV)
         return self.phaseA
 
     def calcMagField(self, va, vb, vc) -> list:
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     bldc.print()
 
     dt = 0.001
-    Type = "smooth_6com" #< "smooth_svm", "smooth_6com", "step_12com", "step_6svm", "step_6com"
+    Type = "smooth_6sim" #< "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
     ctrl = Controller_openloop(Type, dt)
     ctrl.print()
     STEPS  = int(2*len(ctrl.COMMUTATION)*ctrl.dwell/dt +0.5)
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     plt.plot(time, stator)
     plt.plot(time, halls)
     plt.plot(time, count)
-    if (Type != "step_6com") and (Type != "step_12com") and (Type != "step_6svm"):
+    if (Type != "step_6com") and (Type != "step_12com") and (Type != "step_6sin"):
         plt.plot(time, bemf)
         plt.plot(time, omega)
     plt.show()

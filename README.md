@@ -23,29 +23,30 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Hall sensors output.
 - Encoder output.
 - Support exteranl load and disturbance (currently constant).
-- Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6, 12 and 72 (SVM) step commutation methods.
+- Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6, 12 steps and sinusoidal commutation methods.
 
-### Open loop with smooth SVM motion (72 steps, 5 deg each)
-![alt text](./figures/BLDCopenloopsmooth_SVM.gif "Open loop with smooth SVM motion (72 steps, 5 deg each)")
+### Open loop with smooth motion (Sinusoidal 72 steps, 5 deg each)
+![alt text](./figures/BLDCopenloopsmooth_SIN.gif "Open loop with smooth SIN motion (72 steps, 5 deg each)")
 
-### Open loop with smooth motion (3 active phase)
+### Open loop with smooth motion (Sinusoidal 6 steps, 3 active phase)
 ![alt text](./figures/BLDCopenloopsmooth_6step.gif "Open loop with smooth motion (3 active phase)")
 
-### Open loop with 12 step commutation (combined 2 and 3 active phase)
-![alt text](./figures/BLDCopenloop_12step.gif "Open loop with 12 step commutation (3 active phase)")
+### Open loop with 12 steps commutation (combined 2 and 3 active phase)
+![alt text](./figures/BLDCopenloop_12step.gif "Open loop with 12 steps commutation (3 active phase)")
 
-### Open loop with 6 step commutation (3 active phase)
-![alt text](./figures/BLDCopenloop_6step_3phase.gif "Open loop with 6 step commutation (3 active phase)")
+### Open loop with 6 steps commutation (3 active phase)
+![alt text](./figures/BLDCopenloop_6step_3phase.gif "Open loop with 6 steps commutation (3 active phase)")
 
-### Open loop with 6 step commutation (2 active phase)
-![alt text](./figures/BLDCopenloop_6step_2phase.gif "Open loop with 6 step commutation (2 active phase)")
+### Open loop with 6 steps commutation (2 active phase)
+![alt text](./figures/BLDCopenloop_6step_2phase.gif "Open loop with 6 steps commutation (2 active phase)")
 
 ## Future plans
 - Configurable number of poles to motor.
-- Option for dynamic-load changes.
-- Load motor parameters from json file.
+- Option to change the external load parameters in run time.
+- Read motor parameters from .json file.
+- Demonstration of automatic commutation algorithm.
 - More examples of controllers such as:
-  - Demonstration of automatic commutation technique.
+  - Open-loop Space Vector Modulation (SVM).
   - Closed-loop 6 step commutation.
   - Closed-loop Field Oriented Control (FOC) with SVM.
   - Closed-loop sensorless 6 step commutation.

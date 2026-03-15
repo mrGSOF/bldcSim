@@ -17,23 +17,6 @@ class Controller_openloop():
                                 [0,    1,    None], #5 P:B->A, H:001
                                 ]
 
-## CW with two phase activation on each step
-        self.COMMUTATION_12COM = [
-                                #PhsA  PhsB  PhsC 
-                                [0,    None, 1   ], #0 P:C->A, H:011
-                                [0,    0,    1   ], #a P:C->A, H:011
-                                [None, 0,    1   ], #1 P:C->B, H:010
-                                [1,    0,    1   ], #b P:C->B, H:010
-                                [1,    0,    None], #2 P:A->B, H:110
-                                [1,    0,    0   ], #c P:A->B, H:110
-                                [1,    None, 0   ], #3 P:A->C, H:100
-                                [1,    1,    0   ], #d P:A->C, H:100
-                                [None, 1,    0   ], #4 P:B->C, H:101
-                                [0,    1,    0   ], #e P:B->C, H:101
-                                [0,    1,    None], #5 P:B->A, H:001
-                                [0,    1,    1   ], #f P:B->A, H:001
-                                ]
-
 ## CCW with two phase activation on each step
 ##        self.COMMUTATION_6COM = [
 ##                                #PhsA  PhsB  PhsC 
@@ -46,7 +29,7 @@ class Controller_openloop():
 ##                                ]
 
 ## CW with three phase activation on each step
-        self.COMMUTATION_6SVM = [
+        self.COMMUTATION_6SIN = [
                                 [0,0,1], #0
                                 [1,0,1], #1
                                 [1,0,0], #2
@@ -55,10 +38,31 @@ class Controller_openloop():
                                 [0,1,1], #5
                                 ]
 
-        if Type == "smooth_6com":
+## CW with two phase activation on each step
+        self.COMMUTATION_12COM = []
+        for com,sin in zip(self.COMMUTATION_6COM, self.COMMUTATION_6SIN):
+            self.COMMUTATION_12COM.append(com)
+            self.COMMUTATION_12COM.append(sin)
+##        self.COMMUTATION_12COM = [
+##                                #PhsA  PhsB  PhsC 
+##                                [0,    None, 1   ], #0 P:C->A, H:011
+##                                [0,    0,    1   ], #a P:C->A, H:011
+##                                [None, 0,    1   ], #1 P:C->B, H:010
+##                                [1,    0,    1   ], #b P:C->B, H:010
+##                                [1,    0,    None], #2 P:A->B, H:110
+##                                [1,    0,    0   ], #c P:A->B, H:110
+##                                [1,    None, 0   ], #3 P:A->C, H:100
+##                                [1,    1,    0   ], #d P:A->C, H:100
+##                                [None, 1,    0   ], #4 P:B->C, H:101
+##                                [0,    1,    0   ], #e P:B->C, H:101
+##                                [0,    1,    None], #5 P:B->A, H:001
+##                                [0,    1,    1   ], #f P:B->A, H:001
+##                                ]
+
+        if Type == "smooth_6sin":
             self.dwell  = 0.08 #< Almost ideal dwell time at each comutation state
             self.V      = 0.2
-            self.COMMUTATION = self.COMMUTATION_6SVM
+            self.COMMUTATION = self.COMMUTATION_6SIN
         elif Type == "step_6com":
             self.dwell  = 0.5
             self.V      = 2.0
@@ -67,11 +71,11 @@ class Controller_openloop():
             self.dwell  = 0.3
             self.V      = 2.0
             self.COMMUTATION = self.COMMUTATION_12COM
-        elif Type == "step_6svm":
+        elif Type == "step_6sin":
             self.dwell  = 0.5
             self.V      = 2.0
-            self.COMMUTATION = self.COMMUTATION_6SVM
-        elif Type == "smooth_svm":
+            self.COMMUTATION = self.COMMUTATION_6SIN
+        elif Type == "smooth_sin":
             self.dwell  = 0.01
             self.V      = 0.1
             DELTA_DEG   = 5        #< Five degree step resolution
@@ -85,7 +89,7 @@ class Controller_openloop():
         else:
             self.dwell  = dwell
             self.V      = V
-            self.COMMUTATION = self.COMMUTATION_6SVM
+            self.COMMUTATION = self.COMMUTATION_6SIN
 
         self.time = 0
         self.camIdx = 0
@@ -116,7 +120,7 @@ if __name__ == "__main__":
     from matLib import matrix
 
     dt = 0.001
-    ctrl = Controller_openloop(Type="smooth_svm", dt=dt)
+    ctrl = Controller_openloop(Type="smooth_sin", dt=dt)
     ctrl.print()
     STEPS  = int(len(ctrl.COMMUTATION)*ctrl.dwell/dt +0.5)
     phaseV = matrix(rows=STEPS, cols=3, val=0)
