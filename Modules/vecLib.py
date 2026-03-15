@@ -32,12 +32,27 @@ def absV(V) -> float:
     """ Return the magnitude of a vector """
     return sqrt(mag2V(V))
 
+def addV(V1, V2) -> list:
+    """ Return the result of vector addition """
+    dim = len(V1)
+    if dim == 2:
+        return [V1[0]+V2[0], V1[1]+V2[1]]
+    if dim == 2:
+        return [V1[0]+V2[0], V1[1]+V2[1], V1[2]+V2[2]]
+    O = [0]*dim
+    for i, (v1,v2) in enumerate(zip(V1, V2)):
+        O[i] = v1+v2
+    return O
+
 def subV( V1, V2 ) -> list:
     """Add two vectors""" 
     vectorOut = [0]*len(V1)
     for i, (v1, v2) in enumerate(zip(V1, V2)):
         vectorOut[i] = v1 -v2
     return vectorOut
+
+def addV_bias(v, bias):
+    return addV(v, [bias]*len(v))
 
 def crossV3( V1, V2 ) -> list:
     """Computes the cross product of two vectors"""
@@ -53,7 +68,6 @@ def scaleV( V, scale ):
     for i,v in enumerate(V):
         vectorOut[i] = v*scale
     return vectorOut
-
 
 def angleV2(V) -> float:
     """ Return the angle of 2D vector """
