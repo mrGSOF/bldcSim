@@ -1,3 +1,9 @@
+"""
+ * Created on: 8 Mar 2026
+ * Author:     Guy Soffer
+ * Copyright (C) 2026 Guy Soffer
+"""
+
 from math import pi
 from vecLib import subV, scaleV, crossV3, polarV2
 from matLib import MxV, rotateV2, getM, putCol, putRow
@@ -87,9 +93,9 @@ class Stator():
                          [-1/2*Z,  1/2*Z, -1/2*Z],
                          [-1/2*Z, -1/2*Z,  1/2*Z]]
 
-        self.VtoI_sin = [[ 1/1.5*Z, -1/3*Z,   -1/3*Z  ],
-                         [-1/3*Z,    1/1.5*Z, -1/3*Z  ],
-                         [-1/3*Z,   -1/3*Z,    1/1.5*Z]]
+        self.VtoI_sin = [[ 2/3*Z, -1/3*Z, -1/3*Z],
+                         [-1/3*Z,  2/3*Z, -1/3*Z],
+                         [-1/3*Z, -1/3*Z,  2/3*Z]]
 
         self.phaseV    = [0,0,0]
         self.calcMagField(*self.phaseV)
@@ -215,7 +221,7 @@ if __name__ == "__main__":
     bldc.print()
 
     dt = 0.001
-    Type = "smooth_6sim" #< "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
+    Type = "smooth_svm" #< "smooth_svm", "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
     ctrl = Controller_openloop(Type, dt)
     ctrl.print()
     STEPS  = int(2*len(ctrl.COMMUTATION)*ctrl.dwell/dt +0.5)

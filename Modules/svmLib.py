@@ -1,15 +1,25 @@
-from math import sin
+## By: Guy Soffer (GSOF) 18/Mar/2026
+__version__ = "1.0.0"
+__author__ = "Guy Soffer"
+__copyright__ = ""
+__credits__ = [""]
+__license__ = ""
+__maintainer__ = ""
+__email__ = "gsoffer@yahoo.com"
+__status__ = "Development"
+
+from math import sin, pi
 from matLib import rotateV2
 from vecLib import addV, addV_bias
-
-def clip(val, Min, Max) -> float:
-    if val < Min:
-        return Min
-    if val > Max:
-        return Max
-    return val
-
 from ClarkeTransform import clarkeInv
+
+def clip(vVal, Min, Max) -> float:
+    for i,val in enumerate(vVal):
+        if val < Min:
+            vVal[i] = Min
+        elif val > Max:
+            vVal[i] = Max
+    return vVal
 
 class SVM():
     @staticmethod
@@ -17,14 +27,12 @@ class SVM():
         return -sin(3*angle_rad +pi/2)
 
     @staticmethod
-    def getPhaseNorm(mag, angle_rad, biasGain=0.155) -> list:
+    def getPhase(mag, angle_rad, biasGain=0.155) -> list:
+        Bx, By = rotateV2(angle_rad, [mag*(1+biasGain-0.01),0])
         bias = SVM.getCarrier(angle_rad)
-        ix, iy = rotateV2(angle_rad, [mag*(1+biasGain-0.01),0])
-        ia,ib,ic = addV_bias(clarkeInv(ix, iy), biasGain*bias)
-        ia = clip(ia, -1,1)
-        ib = clip(ib, -1,1)
-        ic = clip(ic, -1,1)
-        return ((ia, ib, ic), bias)
+        V = addV_bias(clarkeInv(Bx, By), biasGain*bias)
+        V = clip(V, -mag,mag)
+        return (V, bias)
 
 
 if __name__ == "__main__":
@@ -45,11 +53,11 @@ if __name__ == "__main__":
     ang_r     = 0.0
 
     for frame in range(0, STEPS):
-        svmV, bV = svm.getPhaseNorm(mag=1, angle_rad=ang_r, biasGain=0.155) #< 15.5% increase
+        svmV, bV = svm.getPhase(mag=1, angle_rad=ang_r, biasGain=0.155) #< 15.5% increase
         svmPhaseV[frame] = svmV
         svmPP[frame] = svmV[0] -svmV[1]
         bias[frame]   = bV
-        sinV, sbV = svm.getPhaseNorm(mag=1, angle_rad=ang_r, biasGain=0.0)
+        sinV, sbV = svm.getPhase(mag=1, angle_rad=ang_r, biasGain=0.0)
         sinPhaseV[frame] = sinV
         sinPP[frame] = sinV[0] -sinV[1]
         boost[frame] = (svmPP[frame] / sinPP[frame]) -1.0
@@ -67,4 +75,10 @@ if __name__ == "__main__":
     sinPlt.plot(angle, sinPhaseV)
     #sinPlt.plot(angle, sinPP)
     #plt.plot(angle, bias)
+    fig1, (svmPolar, sinPolar) = plt.subplots(nrows=1, ncols=2, subplot_kw={'projection': 'polar'})
+    svmPolar.set_rmax(2), svmPolar.set_rmin(0.0)
+    svmPolar.plot(angle, svmPP),
+    sinPolar.set_rmax(2), sinPolar.set_rmin(0.0)
+    sinPolar.plot(angle, sinPP),
+
     plt.show()

@@ -2,7 +2,7 @@
 """
  * Demo_Demo_BLDC.py
  * Created on: 8 Mar 2026
- * Author:     Guy Soffer
+ * Author:     Guy Soffer (gsoffer@yahoo.com)
  * Copyright (C) 2026 Guy Soffer
 """
 import os, sys
@@ -35,7 +35,7 @@ background = Text(  screen=screen, pos=pos, size=screen_size, color=BG_color, na
 
 
 dt = 0.001
-Type = "smooth_sin" #< "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
+Type = "smooth_svm" #< "smooth_svm", "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
 ctrl = Controller_openloop(Type, dt)
 
 bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0003, viscosity_Nm_rps=0.00002,

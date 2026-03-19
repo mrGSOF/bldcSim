@@ -1,5 +1,12 @@
-from vecLib import scaleV
+"""
+ * Created on: 8 Mar 2026
+ * Author:     Guy Soffer
+ * Copyright (C) 2026 Guy Soffer
+"""
+
 from math import pi, sin, cos
+from vecLib import scaleV
+from svmLib import SVM
 
 class Controller_openloop():
     def __init__(self, Type="none", dwell=None, V=None, dt=0.001):    
@@ -86,6 +93,15 @@ class Controller_openloop():
                 self.COMMUTATION[i] = [cos(phase_r +2*PHASE_RAD),
                                        cos(phase_r +1*PHASE_RAD),
                                        cos(phase_r +0*PHASE_RAD)]
+        elif Type == "smooth_svm":
+            self.dwell  = 0.025
+            self.V      = 0.1
+            DELTA_DEG   = 5        #< Five degree step resolution
+            self.COMMUTATION = [0]*int(360/DELTA_DEG)
+            PHASE_RAD = 120*pi/180 #< 120 degrees
+            for i, deg in enumerate(range(0,360,DELTA_DEG)):
+                phase_r = deg*pi/180 -pi
+                self.COMMUTATION[i],bias = SVM.getPhase(1.0, phase_r)
         else:
             self.dwell  = dwell
             self.V      = V
@@ -120,7 +136,7 @@ if __name__ == "__main__":
     from matLib import matrix
 
     dt = 0.001
-    ctrl = Controller_openloop(Type="smooth_sin", dt=dt)
+    ctrl = Controller_openloop(Type="smooth_svm", dt=dt)
     ctrl.print()
     STEPS  = int(len(ctrl.COMMUTATION)*ctrl.dwell/dt +0.5)
     phaseV = matrix(rows=STEPS, cols=3, val=0)
