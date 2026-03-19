@@ -23,7 +23,10 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Hall sensors output.
 - Encoder output.
 - Support exteranl load and disturbance (currently constant).
-- Demonstrate smooth and step movement of the rotor by using an open-loop controller with 6, 12 steps and sinusoidal commutation methods.
+- Demonstrate smooth and step movement of the rotor by using various techniques:
+    - 6, 12 steps commutation using 2 and 3 active phases.
+    - Sinusoidal modulation.
+    - Space Vector Modulation SVM.
 
 ### Open loop with smooth motion (Sinusoidal 72 steps, 5 deg each)
 ![alt text](./figures/BLDCopenloopsmooth_SIN.gif "Open loop with smooth SIN motion (72 steps, 5 deg each)")
@@ -46,7 +49,6 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Read motor parameters from .json file.
 - Demonstration of automatic commutation algorithm.
 - More examples of controllers such as:
-  - Open-loop Space Vector Modulation (SVM).
   - Closed-loop 6 step commutation.
   - Closed-loop Field Oriented Control (FOC) with SVM.
   - Closed-loop sensorless 6 step commutation.
