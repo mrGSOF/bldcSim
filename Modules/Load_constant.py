@@ -1,3 +1,9 @@
+"""
+ * Created on: 8 Mar 2026
+ * Author:     Guy Soffer
+ * Copyright (C) 2026 Guy Soffer
+"""
+
 from Load_base import Load_base, LoadState
 
 class Load_const(Load_base):

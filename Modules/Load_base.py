@@ -1,3 +1,9 @@
+"""
+ * Created on: 8 Mar 2026
+ * Author:     Guy Soffer
+ * Copyright (C) 2026 Guy Soffer
+"""
+
 class LoadState():
     def __init__(self, inertia=0.0, viscosity=0.0, friction=0.0, torque=0.0):
         self.inertia = inertia

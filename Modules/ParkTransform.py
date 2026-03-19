@@ -1,3 +1,9 @@
+"""
+ * Created on: 8 Mar 2026
+ * Author:     Guy Soffer
+ * Copyright (C) 2026 Guy Soffer
+"""
+
 from matLib import MxV, T, DCM_V2
 
 def park(ix, iy, theta_rad) -> list:
