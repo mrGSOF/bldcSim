@@ -48,6 +48,8 @@ https://guy.soffer.tech/tutorials/bldc-motor-control
 - Option to change the external load parameters in run time.
 - Read motor parameters from .json file.
 - Demonstration of automatic commutation algorithm.
+- Option to interact with the rotor using the mouse.
+- Option to change the motor parameters in real-time using the keyboard.
 - More examples of controllers such as:
   - Closed-loop 6 step commutation.
   - Closed-loop Field Oriented Control (FOC) with SVM.
