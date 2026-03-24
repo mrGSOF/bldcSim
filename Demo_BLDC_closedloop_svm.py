@@ -13,7 +13,7 @@ sys.path.append(os.path.join(Path.cwd(), 'Modules'))
 from math import pi
 from Modules.EM_model import BLDC
 from Modules.Load_constant import Load_const as Load
-from Modules.Controller_openloop import Controller_openloop
+from Modules.Controller_closedloop_svm import Controller
 from GSOF_Cockpit import DualIndicator as BLDC_VIEW
 
 from GSOF_Cockpit.GraphicsLib import imageLoad, getScreen, init, fillScreen, update
@@ -35,14 +35,20 @@ background = Text(  screen=screen, pos=pos, size=screen_size, color=BG_color, na
 
 
 dt = 0.001
-Type = "smooth_svm" #< "smooth_svm", "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
-ctrl = Controller_openloop(Type, dt)
-
+encCounts = 4096
+_2pi = 2*pi
 bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0003, viscosity_Nm_rps=0.00002,
             coilImpedance_Ohm=1.67, Kv_rpm_v=258,
-            load=Load(inertia=0.0, viscosity=0.0, friction=0.0, torque=0.000)
-            #load=Load(inertia=0.01, viscosity=0.0, friction=0.0, torque=0.000)
+            load=Load(inertia=0.0, viscosity=0.0, friction=0.0, torque=0.000),
+            #load=Load(inertia=0.01, viscosity=0.0, friction=0.0, torque=0.000),
+            encoderLines=encCounts,
             )
+
+ctrl = Controller(setBldcPhaseV = bldc.setPhaseV,
+                  getEncoder    = bldc.getEncoderCount,
+                  encCntToRad   = _2pi/encCounts,
+                  dt=dt
+                  )
 
 bldcView = BLDC_VIEW.DualIndicator( screen=screen, pos=pos, size=screen_size,
                     bodyImage  = imageLoad('%s/BLDC_stator.png'%path),
@@ -59,11 +65,8 @@ clock = Clock()
 
 while True:
     for i in range(0,5):
-        ### Step the controller
-        phaseV = ctrl.step()
-
-        ### Step the BLDC motor
-        bldc.step( *phaseV, dt=dt )
+        ctrl.step(ctrlV=0.05, dt=dt) #< Step the controller
+        bldc.step(dt=dt)            #< Step the BLDC motor
 
     ###Loop to update gauges
     bldcView.update( bldc.rotor.theta_rad, bldc.stator.magField_rad )

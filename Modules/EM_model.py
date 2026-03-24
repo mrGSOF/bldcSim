@@ -143,6 +143,7 @@ class BLDC():
     def __init__(self, inertia_kgm2=0.000005, omega_rps=0.0, theta_rad=0.0,
                  friction_Nm=0.1, viscosity_Nm_rps=0.2,
                  coilImpedance_Ohm=1.67, Kv_rpm_v=258,
+                 encoderLines = 4096,
                  load=Load_base()):
         self.Kv        = Kv_rpm_v*2*pi/60 #< Might belong to the Rotor class
         self.Kt        = 1/Kv_rpm_v
@@ -157,17 +158,25 @@ class BLDC():
         self.hallC     = Hall(60*pi/180,  hallSector_rad)
         self.halls     = [False, False, False]
         self._sampleHallState()
-        self.encoder   = Encoder(counts=4096)
+        self.encoder   = Encoder(counts=encoderLines)
+        self.phaseV    = [0,0,0]
+
+
+    def setPhaseV(self, va, vb, vc) -> None:
+        self.phaseV = [va, vb, vc]
         
-    def step(self, va, vb, vc, dt) -> None:
+    def step(self, va=None, vb=None, vc=None, dt=None) -> None:
         """"""
+        if (va == None) and (vb == None) and (vc == None):
+            phaseV = self.phaseV
+        else:
+            phaseV = [va, vb, vc]
         self._sampleHallState()
-        phaseV = [va, vb, vc]
         bemf = self.stator.calcBemf(self.rotor, self.Kv)
         for i,(pv,bv) in enumerate(zip(phaseV,bemf)):
             if pv != None:
                 phaseV[i] = pv -bv
-        torque = self.Kt * crossV2(self.stator.calcMagField(va, vb, vc), self.rotor.getMagField())
+        torque = self.Kt * crossV2(self.stator.calcMagField(*phaseV), self.rotor.getMagField())
         self._stepRotor(torque, dt)
 
     def _sampleHallState(self) -> list:

@@ -21,8 +21,9 @@ class Controller():
     def step(self, ctrlV=None, dt=1.0) -> None:
         if ctrlV != None:
             self.ctrlV = ctrlV
-        angle_r = self.getEncoder()*self.encCntToRad +pi/2
-        phaseV, bias = SVM.getPhase(self.ctrlV, angle_r)
+        rotor_r = self.getEncoder()*self.encCntToRad
+        stator_r = (rotor_r -(pi/2.0))%(2*pi)
+        phaseV, bias = SVM.getPhase(self.ctrlV, stator_r, biasGain=0.155)
         self.setBldcPhaseV(*phaseV)
 
 if __name__ == "__main__":
@@ -63,27 +64,46 @@ if __name__ == "__main__":
             
     dt = 0.001
     encCounts = 4096
-    bldc = BldcMock(encCounts)
+##    bldc = BldcMock(encCounts)
+##    ctrl = Controller(setBldcPhaseV = bldc.setPhaseV,
+##                      getEncoder    = bldc.getEncoderCount,
+##                      encCntToRad   = _2pi/encCounts,
+##                      dt=dt
+##                      )
+##
+##    for rad in (0.0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4):
+##        bldc.setRotor_r(rad)
+##        ctrl.step(ctrlV=1, dt=dt)
+##        bldc.print()
+##        print("\n")
+
+
+    from EM_model import BLDC
+    from Load_constant import Load_const as Load
+    bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0003, viscosity_Nm_rps=0.00002,
+                coilImpedance_Ohm=1.67, Kv_rpm_v=258,
+                load=Load(inertia=0.0, viscosity=0.0, friction=0.0, torque=0.000),
+                #load=Load(inertia=0.01, viscosity=0.0, friction=0.0, torque=0.000),
+                encoderLines=encCounts,
+                )
+
     ctrl = Controller(setBldcPhaseV = bldc.setPhaseV,
                       getEncoder    = bldc.getEncoderCount,
-                      encCntToRad   = _2pi/4096,
+                      encCntToRad   = _2pi/encCounts,
                       dt=dt
                       )
 
-    for rad in (0.0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4):
-        bldc.setRotor_r(rad)
-        ctrl.step(ctrlV=1, dt=dt)
-        bldc.print()
-        print("\n")
+    dt = 0.001
+    runTime_s = 2.0
+    STEPS  = int((runTime_s/dt) +0.5)
+    phaseV = matrix(rows=STEPS, cols=3, val=0)
+    time   = [0]*STEPS
 
-##    dt = 0.001
-##    runTime_s = 2.0
-##    STEPS  = int((runTime_s/dt) +0.5)
-##    phaseV = matrix(rows=STEPS, cols=3, val=0)
-##    time   = [0]*STEPS
-##
-##    for frame in range(0, STEPS):
-##        ctrl.step(dt)
-##        bldc.step(dt)
-##    plt.plot(time, phaseV)
-##    plt.show()
+    for frame in range(0, STEPS):
+        ctrl.step(ctrlV=0.07, dt=dt)
+        bldc.step(dt=dt)
+        phaseV[frame] = bldc.phaseV
+        time[frame] = frame*dt
+
+    plt.plot(time, phaseV)
+    plt.show()

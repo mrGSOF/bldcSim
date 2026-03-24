@@ -16,12 +16,12 @@ class Controller_openloop():
 ## CW with two phase activation on each step
         self.COMMUTATION_6COM = [
                                 #PhsA  PhsB  PhsC 
-                                [0,    None, 1   ], #0 P:C->A, H:011
-                                [None, 0,    1   ], #1 P:C->B, H:010
-                                [1,    0,    None], #2 P:A->B, H:110
-                                [1,    None, 0   ], #3 P:A->C, H:100
-                                [None, 1,    0   ], #4 P:B->C, H:101
-                                [0,    1,    None], #5 P:B->A, H:001
+                                [0,    None, 1   ], #0 P:C->A, H:011 North to 210
+                                [None, 0,    1   ], #1 P:C->B, H:010 North to 270
+                                [1,    0,    None], #2 P:A->B, H:110 North to 330
+                                [1,    None, 0   ], #3 P:A->C, H:100 North to 30
+                                [None, 1,    0   ], #4 P:B->C, H:101 North to 90
+                                [0,    1,    None], #5 P:B->A, H:001 North to 150
                                 ]
 
 ## CCW with two phase activation on each step
@@ -37,12 +37,12 @@ class Controller_openloop():
 
 ## CW with three phase activation on each step
         self.COMMUTATION_6SIN = [
-                                [0,0,1], #0
-                                [1,0,1], #1
-                                [1,0,0], #2
-                                [1,1,0], #3
-                                [0,1,0], #4
-                                [0,1,1], #5
+                                [0,0,1], #0 North to 240
+                                [1,0,1], #1 North to 300
+                                [1,0,0], #2 North to 360
+                                [1,1,0], #3 North to 60
+                                [0,1,0], #4 North to 120
+                                [0,1,1], #5 North to 180
                                 ]
 
 ## CW with two phase activation on each step
@@ -94,7 +94,7 @@ class Controller_openloop():
                                        cos(phase_r +1*PHASE_RAD),
                                        cos(phase_r +0*PHASE_RAD)]
         elif Type == "smooth_svm":
-            self.dwell  = 0.025
+            self.dwell  = 0.01
             self.V      = 0.1
             DELTA_DEG   = 5        #< Five degree step resolution
             self.COMMUTATION = [0]*int(360/DELTA_DEG)
