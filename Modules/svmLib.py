@@ -30,7 +30,7 @@ class SVM():
     def getPhase(mag, angle_rad, biasGain=0.155) -> list:
         Bx, By = rotateV2(angle_rad, [mag*(1+biasGain-0.01),0])
         bias = SVM.getCarrier(angle_rad)
-        V = addV_bias(clarkeInv(Bx, By), biasGain*bias)
+        V = addV_bias(clarkeInv(Bx, By), mag*biasGain*bias)
         V = clip(V, -mag,mag)
         return (V, bias)
 

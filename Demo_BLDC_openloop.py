@@ -35,7 +35,7 @@ background = Text(  screen=screen, pos=pos, size=screen_size, color=BG_color, na
 
 
 dt = 0.001
-Type = "smooth_svm" #< "smooth_svm", "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
+Type = "smooth_sin" #< "smooth_svm", "smooth_sin", "smooth_6sin", "step_12com", "step_6sin", "step_6com"
 ctrl = Controller_openloop(Type, dt)
 
 bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0003, viscosity_Nm_rps=0.00002,
@@ -46,11 +46,11 @@ bldc = BLDC(inertia_kgm2=0.000002, friction_Nm=0.0003, viscosity_Nm_rps=0.00002,
 
 bldcView = BLDC_VIEW.DualIndicator( screen=screen, pos=pos, size=screen_size,
                     bodyImage  = imageLoad('%s/BLDC_stator.png'%path),
-                    handAImage = imageLoad('%s/BLDC_rotor.png'%path),
+                    handAImage = imageLoad('%s/BLDC_rotor_2pole.png'%path),
                     handBImage = imageLoad('%s/MagFieldArrow.png'%path),
                     inputAtoDeg = -180/pi,
                     inputBtoDeg = -180/pi,
-                    offsetA_deg = 180.0,  #< Rotor position (North points up)
+                    offsetA_deg = 0.0,  #< Rotor position (North points up)
                     offsetB_deg = 0.0,    #< Stator magnetic field (North points right)
                     kp = 1,               #< No display filtering
                   )    
