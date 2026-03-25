@@ -65,11 +65,12 @@ clock = Clock()
 
 while True:
     for i in range(0,5):
-        ctrl.step(ctrlV=0.05, dt=dt) #< Step the controller
+        ctrl.step(ctrlV=0.2, dt=dt) #< Step the controller
         bldc.step(dt=dt)            #< Step the BLDC motor
-
+    #print(bldc.getPhaseA())
+    #print(bldc.getPhaseBemf())
     ###Loop to update gauges
-    bldcView.update( bldc.rotor.theta_rad, bldc.stator.magField_rad )
+    bldcView.update( bldc.getRotor_rad(), bldc.getStatorField_rad() )
     bldcView.draw()
     update()
     clock.tick(Fs=100)

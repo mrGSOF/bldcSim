@@ -84,18 +84,18 @@ class Controller_openloop():
             self.COMMUTATION = self.COMMUTATION_6SIN
         elif Type == "smooth_sin":
             self.dwell  = 0.01
-            self.V      = 0.1
+            self.V      = 0.15
             DELTA_DEG   = 5        #< Five degree step resolution
             self.COMMUTATION = [0]*int(360/DELTA_DEG)
             PHASE_RAD = 120*pi/180 #< 120 degrees
             for i, deg in enumerate(range(0,360,DELTA_DEG)):
                 phase_r = deg*pi/180
-                self.COMMUTATION[i] = [cos(phase_r +2*PHASE_RAD),
-                                       cos(phase_r +1*PHASE_RAD),
-                                       cos(phase_r +0*PHASE_RAD)]
+                self.COMMUTATION[i] = [0.5*cos(phase_r +2*PHASE_RAD) +1.0,
+                                       0.5*cos(phase_r +1*PHASE_RAD) +1.0,
+                                       0.5*cos(phase_r +0*PHASE_RAD) +1.0]
         elif Type == "smooth_svm":
             self.dwell  = 0.01
-            self.V      = 0.1
+            self.V      = 0.15
             DELTA_DEG   = 5        #< Five degree step resolution
             self.COMMUTATION = [0]*int(360/DELTA_DEG)
             PHASE_RAD = 120*pi/180 #< 120 degrees
