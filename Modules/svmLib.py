@@ -28,10 +28,11 @@ class SVM():
 
     @staticmethod
     def getPhase(mag, angle_rad, biasGain=0.155) -> list:
-        Bx, By = rotateV2(angle_rad, [mag*(1+biasGain-0.01),0])
+        _mag = 0.5*mag
+        Bx, By = rotateV2(angle_rad, [_mag*(1+biasGain-0.01),0])
         bias = SVM.getCarrier(angle_rad)
-        V = addV_bias(clarkeInv(Bx, By), mag*biasGain*bias)
-        V = clip(V, -mag,mag)
+        V = addV_bias(clarkeInv(Bx, By), _mag*(1+biasGain*bias))
+        V = clip(V, 0,mag)
         return (V, bias)
 
 
@@ -66,12 +67,12 @@ if __name__ == "__main__":
         
     fig, (svmPlt, sinPlt) = plt.subplots(nrows=2, ncols=1)
     svmPlt.set_title('SVM')
-    svmPlt.set_ylim(-1, 1)
+    svmPlt.set_ylim(0, 1)
     svmPlt.plot(angle, svmPhaseV)
     svmPlt.plot(angle, boost)
     #svmPlt.plot(angle, svmPP)
     sinPlt.set_title('SIN')
-    sinPlt.set_ylim(-1, 1)
+    sinPlt.set_ylim(0, 1)
     sinPlt.plot(angle, sinPhaseV)
     #sinPlt.plot(angle, sinPP)
     #plt.plot(angle, bias)

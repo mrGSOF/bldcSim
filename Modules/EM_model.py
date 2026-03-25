@@ -98,6 +98,7 @@ class Stator():
                          [-1/3*Z, -1/3*Z,  2/3*Z]]
 
         self.phaseV    = [0,0,0]
+        self.phaseA    = [0,0,0]
         self.calcMagField(*self.phaseV)
         self.phaseBemf = [0,0,0]
 
@@ -126,8 +127,8 @@ class Stator():
     def getField(self) -> list:
         return self.magField
 
-    def calcBemf(self, rotor, Kv) -> list:
-        self.phaseBemf = scaleV(clarkeInv(*rotor.getMagField()), rotor.omega_rps/Kv)
+    def calcBemf(self, rotor, Ke) -> list:
+        self.phaseBemf = scaleV(clarkeInv(*rotor.getMagField()), rotor.omega_rps*Ke)
         return self.phaseBemf
 
     def print(self) -> None:
@@ -145,7 +146,7 @@ class BLDC():
                  coilImpedance_Ohm=1.67, Kv_rpm_v=258,
                  encoderLines = 4096,
                  load=Load_base()):
-        self.Kv        = Kv_rpm_v*2*pi/60 #< Might belong to the Rotor class
+        self.Ke        = 60.0/(Kv_rpm_v*2*pi) #< Convert to v/rps. Might belong to the Rotor class
         self.Kt        = 1/Kv_rpm_v
         self.friction  = friction_Nm
         self.viscosity = viscosity_Nm_rps
@@ -172,7 +173,7 @@ class BLDC():
         else:
             phaseV = [va, vb, vc]
         self._sampleHallState()
-        bemf = self.stator.calcBemf(self.rotor, self.Kv)
+        bemf = self.stator.calcBemf(self.rotor, self.Ke/5)
         for i,(pv,bv) in enumerate(zip(phaseV,bemf)):
             if pv != None:
                 phaseV[i] = pv -bv
@@ -203,9 +204,18 @@ class BLDC():
         ### Update Rotors next state values
         rotor.step(torque, load.inertia, dt)
 
-    def getBemf(self) -> list:
-        return self.stator.phaseBemf()
+    def getRotor_rad(self):
+        return self.rotor.theta_rad
     
+    def getStatorField_rad(self):
+        return self.stator.magField_rad
+
+    def getPhaseBemf(self) -> list:
+        return self.stator.phaseBemf
+    
+    def getPhaseA(self) -> list:
+        return self.stator.phaseA
+
     def getHall(self) -> list:
         return self.halls
 
